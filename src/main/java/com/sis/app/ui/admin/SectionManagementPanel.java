@@ -29,59 +29,84 @@ class SectionManagementPanel extends JPanel {
 
     SectionManagementPanel(AdminService adminService) {
         this.adminService = adminService;
-        setLayout(new MigLayout("fillx, wrap, insets 20", "[grow]", "[]20[]"));
+        setLayout(new MigLayout("fillx, wrap, insets 24", "[grow]", "[]24[]"));
         setBackground(UIStyle.BACKGROUND_DARK);
 
-        // Create Section Card
+        // Create Section Card with scrollable content
         JPanel createSectionCard = UIStyle.createCard();
-        createSectionCard.setLayout(new MigLayout("fillx, wrap, insets 0", "[grow]", 
-            "[]8[]8[]8[]8[]8[]8[]8[]15[]"));
-        
+        createSectionCard.setLayout(new BorderLayout());
+
+        JPanel createSectionContent = new JPanel(new MigLayout("fillx, wrap, insets 0", "[grow]",
+                "[]12[]10[]10[]10[]10[]10[]10[]10[]28[]"));
+        createSectionContent.setOpaque(false);
+
         JLabel createTitle = UIStyle.createHeading("Create New Section", 3);
-        createSectionCard.add(createTitle, "growx, wrap");
-        
-        addComboField(createSectionCard, "📚 Course", courseCombo);
-        addComboField(createSectionCard, "👨‍🏫 Instructor", instructorCombo);
-        addFormField(createSectionCard, "📅 Day & Time", dayTimeField);
-        addFormField(createSectionCard, "🏢 Room", roomField);
-        addFormField(createSectionCard, "👥 Capacity", capacityField);
-        addFormField(createSectionCard, "📆 Semester", semesterField);
-        addFormField(createSectionCard, "📅 Year", yearField);
-        
+        createSectionContent.add(createTitle, "growx, wrap");
+
+        addComboField(createSectionContent, "📚 Course", courseCombo);
+        addComboField(createSectionContent, "👨‍🏫 Instructor", instructorCombo);
+        addFormField(createSectionContent, "📅 Day & Time", dayTimeField);
+        addFormField(createSectionContent, "🏢 Room", roomField);
+        addFormField(createSectionContent, "👥 Capacity", capacityField);
+        addFormField(createSectionContent, "📆 Semester", semesterField);
+        addFormField(createSectionContent, "📅 Year", yearField);
+
         JButton createSectionButton = UIStyle.createPrimaryButton("Create Section");
-        createSectionButton.setPreferredSize(new Dimension(0, 45));
+        createSectionButton.setPreferredSize(new Dimension(0, 48));
         createSectionButton.addActionListener(e -> createSection());
-        createSectionCard.add(createSectionButton, "growx");
-        
+        createSectionContent.add(createSectionButton, "growx");
+
+        JScrollPane createSectionScroll = new JScrollPane(createSectionContent);
+        createSectionScroll.setBorder(null);
+        createSectionScroll.setOpaque(false);
+        createSectionScroll.getViewport().setOpaque(false);
+        createSectionScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        createSectionScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        UIStyle.styleScrollPane(createSectionScroll);
+
+        createSectionCard.add(createSectionScroll, BorderLayout.CENTER);
+        createSectionCard.setPreferredSize(new Dimension(0, 600));
         add(createSectionCard, "growx, wrap");
 
-        // Assign Instructor Card
+        // Assign Instructor Card with scrollable content
         JPanel assignCard = UIStyle.createCard();
-        assignCard.setLayout(new MigLayout("fillx, wrap, insets 0", "[grow]", "[]8[]8[]8[]15[]"));
-        
+        assignCard.setLayout(new BorderLayout());
+
+        JPanel assignContent = new JPanel(new MigLayout("fillx, wrap, insets 0", "[grow]", "[]12[]10[]10[]24[]"));
+        assignContent.setOpaque(false);
+
         JLabel assignTitle = UIStyle.createHeading("Assign Instructor to Section", 3);
-        assignCard.add(assignTitle, "growx, wrap");
-        
-        addComboField(assignCard, "📖 Section", sectionCombo);
-        addComboField(assignCard, "👨‍🏫 Instructor", assignInstructorCombo);
-        
+        assignContent.add(assignTitle, "growx, wrap");
+
+        addComboField(assignContent, "📖 Section", sectionCombo);
+        addComboField(assignContent, "👨‍🏫 Instructor", assignInstructorCombo);
+
         JButton assignButton = UIStyle.createPrimaryButton("Assign Instructor");
-        assignButton.setPreferredSize(new Dimension(0, 45));
+        assignButton.setPreferredSize(new Dimension(0, 48));
         assignButton.addActionListener(e -> assignInstructor());
-        assignCard.add(assignButton, "growx");
-        
+        assignContent.add(assignButton, "growx");
+
+        JScrollPane assignScroll = new JScrollPane(assignContent);
+        assignScroll.setBorder(null);
+        assignScroll.setOpaque(false);
+        assignScroll.getViewport().setOpaque(false);
+        assignScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        assignScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        UIStyle.styleScrollPane(assignScroll);
+
+        assignCard.add(assignScroll, BorderLayout.CENTER);
+        assignCard.setPreferredSize(new Dimension(0, 320));
         add(assignCard, "growx");
     }
-    
+
     private <T> JComboBox<T> createStyledCombo() {
         JComboBox<T> combo = new JComboBox<>();
         combo.setFont(UIStyle.FONT_BODY);
         combo.setBackground(UIStyle.CARD_BACKGROUND);
         combo.setForeground(UIStyle.TEXT_PRIMARY);
         combo.setBorder(javax.swing.BorderFactory.createCompoundBorder(
-            javax.swing.BorderFactory.createLineBorder(UIStyle.BORDER_COLOR, 1),
-            javax.swing.BorderFactory.createEmptyBorder(12, 16, 12, 16)
-        ));
+                javax.swing.BorderFactory.createLineBorder(UIStyle.BORDER_COLOR, 1),
+                javax.swing.BorderFactory.createEmptyBorder(14, 18, 14, 18)));
         combo.setRenderer(new DefaultListCellRenderer() {
             @Override
             public Component getListCellRendererComponent(JList<?> list, Object value, int index,
@@ -95,21 +120,21 @@ class SectionManagementPanel extends JPanel {
         });
         return combo;
     }
-    
+
     private void addFormField(JPanel parent, String label, JComponent field) {
         JLabel labelComp = new JLabel(label);
         labelComp.setFont(UIStyle.FONT_BODY_BOLD);
         labelComp.setForeground(UIStyle.TEXT_PRIMARY);
-        parent.add(labelComp, "growx");
-        parent.add(field, "growx, h 45!, wrap");
+        parent.add(labelComp, "growx, width 160:160:");
+        parent.add(field, "growx, h 48!, wrap");
     }
-    
+
     private void addComboField(JPanel parent, String label, JComboBox<?> combo) {
         JLabel labelComp = new JLabel(label);
         labelComp.setFont(UIStyle.FONT_BODY_BOLD);
         labelComp.setForeground(UIStyle.TEXT_PRIMARY);
-        parent.add(labelComp, "growx");
-        parent.add(combo, "growx, h 45!, wrap");
+        parent.add(labelComp, "growx, width 160:160:");
+        parent.add(combo, "growx, h 48!, wrap");
     }
 
     void refreshData() {
@@ -138,18 +163,70 @@ class SectionManagementPanel extends JPanel {
             return;
         }
         try {
-            int capacity = Integer.parseInt(capacityField.getText().trim());
-            int semester = Integer.parseInt(semesterField.getText().trim());
-            int year = Integer.parseInt(yearField.getText().trim());
+            String dayTime = dayTimeField.getText().trim();
+            String room = roomField.getText().trim();
+            String capacityStr = capacityField.getText().trim();
+            String semesterStr = semesterField.getText().trim();
+            String yearStr = yearField.getText().trim();
+
+            if (dayTime.isEmpty() || room.isEmpty() || capacityStr.isEmpty() || semesterStr.isEmpty()
+                    || yearStr.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "All fields are required.", "Validation Error",
+                        JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            int capacity;
+            try {
+                capacity = Integer.parseInt(capacityStr);
+                if (capacity <= 0 || capacity > 200) {
+                    JOptionPane.showMessageDialog(this, "Capacity must be between 1 and 200.", "Validation Error",
+                            JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(this, "Capacity must be a valid number.", "Validation Error",
+                        JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            int semester;
+            try {
+                semester = Integer.parseInt(semesterStr);
+                if (semester < 1 || semester > 3) {
+                    JOptionPane.showMessageDialog(this, "Semester must be between 1 and 3.", "Validation Error",
+                            JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(this, "Semester must be a valid number.", "Validation Error",
+                        JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            int year;
+            try {
+                year = Integer.parseInt(yearStr);
+                int currentYear = java.time.Year.now().getValue();
+                if (year < currentYear) {
+                    JOptionPane.showMessageDialog(this, "Year cannot be in the past.", "Validation Error",
+                            JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(this, "Year must be a valid number.", "Validation Error",
+                        JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
             adminService.createSection(
                     course.getCode(),
                     instructor.getUserId(),
-                    dayTimeField.getText().trim(),
-                    roomField.getText().trim(),
+                    dayTime,
+                    room,
                     capacity,
                     semester,
-                    year
-            );
+                    year);
             JOptionPane.showMessageDialog(this, "Section created successfully.",
                     "Success", JOptionPane.INFORMATION_MESSAGE);
             dayTimeField.setText("");
@@ -158,9 +235,6 @@ class SectionManagementPanel extends JPanel {
             semesterField.setText("");
             yearField.setText("");
             refreshData();
-        } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(this, "Capacity, semester, and year must be numeric.",
-                    "Invalid Input", JOptionPane.WARNING_MESSAGE);
         } catch (ServiceException ex) {
             JOptionPane.showMessageDialog(this, ex.getMessage(), "Validation Error", JOptionPane.ERROR_MESSAGE);
         } catch (SQLException ex) {
@@ -188,4 +262,3 @@ class SectionManagementPanel extends JPanel {
         }
     }
 }
-

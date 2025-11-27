@@ -24,63 +24,135 @@ class UserManagementPanel extends JPanel {
 
     UserManagementPanel(AdminService adminService) {
         this.adminService = adminService;
-        setLayout(new MigLayout("fillx, wrap, insets 20", "[grow]", "[]20[]"));
+        setLayout(new MigLayout("fillx, wrap, insets 24", "[grow]", "[]24[]"));
         setBackground(UIStyle.BACKGROUND_DARK);
-        
-        // Student card
+
+        // Student card with scrollable content
         JPanel studentCard = UIStyle.createCard();
-        studentCard.setLayout(new MigLayout("fillx, wrap, insets 0", "[grow]", "[]8[]8[]8[]8[]8[]15[]"));
-        
+        studentCard.setLayout(new BorderLayout());
+
+        JPanel studentContent = new JPanel(
+                new MigLayout("fillx, wrap, insets 0", "[grow]", "[]12[]10[]10[]10[]10[]10[]24[]"));
+        studentContent.setOpaque(false);
+
         JLabel studentTitle = UIStyle.createHeading("Create Student Account", 3);
-        studentCard.add(studentTitle, "growx, wrap");
-        
-        addFormField(studentCard, "👤 Username", studentUsernameField);
-        addFormField(studentCard, "🔒 Password", studentPasswordField);
-        addFormField(studentCard, "🎓 Roll Number", studentRollField);
-        addFormField(studentCard, "📚 Program", studentProgramField);
-        addFormField(studentCard, "📅 Year", studentYearField);
-        
+        studentContent.add(studentTitle, "growx, wrap");
+
+        addFormField(studentContent, "👤 Username", studentUsernameField);
+        addFormField(studentContent, "🔒 Password", studentPasswordField);
+        addFormField(studentContent, "🎓 Roll Number", studentRollField);
+        addFormField(studentContent, "📚 Program", studentProgramField);
+        addFormField(studentContent, "📅 Year", studentYearField);
+
         JButton createStudentButton = UIStyle.createPrimaryButton("Create Student");
-        createStudentButton.setPreferredSize(new Dimension(0, 45));
+        createStudentButton.setPreferredSize(new Dimension(0, 48));
         createStudentButton.addActionListener(e -> createStudent());
-        studentCard.add(createStudentButton, "growx");
-        
+        studentContent.add(createStudentButton, "growx");
+
+        JScrollPane studentScroll = new JScrollPane(studentContent);
+        studentScroll.setBorder(null);
+        studentScroll.setOpaque(false);
+        studentScroll.getViewport().setOpaque(false);
+        studentScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        studentScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        UIStyle.styleScrollPane(studentScroll);
+
+        studentCard.add(studentScroll, BorderLayout.CENTER);
+        studentCard.setPreferredSize(new Dimension(0, 520));
         add(studentCard, "growx, wrap");
-        
-        // Instructor card
+
+        // Instructor card with scrollable content
         JPanel instructorCard = UIStyle.createCard();
-        instructorCard.setLayout(new MigLayout("fillx, wrap, insets 0", "[grow]", "[]8[]8[]8[]15[]"));
-        
+        instructorCard.setLayout(new BorderLayout());
+
+        JPanel instructorContent = new JPanel(new MigLayout("fillx, wrap, insets 0", "[grow]", "[]12[]10[]10[]24[]"));
+        instructorContent.setOpaque(false);
+
         JLabel instructorTitle = UIStyle.createHeading("Create Instructor Account", 3);
-        instructorCard.add(instructorTitle, "growx, wrap");
-        
-        addFormField(instructorCard, "👤 Username", instructorUsernameField);
-        addFormField(instructorCard, "🔒 Password", instructorPasswordField);
-        addFormField(instructorCard, "🏛️ Department", instructorDepartmentField);
-        
+        instructorContent.add(instructorTitle, "growx, wrap");
+
+        addFormField(instructorContent, "👤 Username", instructorUsernameField);
+        addFormField(instructorContent, "🔒 Password", instructorPasswordField);
+        addFormField(instructorContent, "🏛️ Department", instructorDepartmentField);
+
         JButton createInstructorButton = UIStyle.createPrimaryButton("Create Instructor");
-        createInstructorButton.setPreferredSize(new Dimension(0, 45));
+        createInstructorButton.setPreferredSize(new Dimension(0, 48));
         createInstructorButton.addActionListener(e -> createInstructor());
-        instructorCard.add(createInstructorButton, "growx");
-        
+        instructorContent.add(createInstructorButton, "growx");
+
+        JScrollPane instructorScroll = new JScrollPane(instructorContent);
+        instructorScroll.setBorder(null);
+        instructorScroll.setOpaque(false);
+        instructorScroll.getViewport().setOpaque(false);
+        instructorScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        instructorScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        UIStyle.styleScrollPane(instructorScroll);
+
+        instructorCard.add(instructorScroll, BorderLayout.CENTER);
+        instructorCard.setPreferredSize(new Dimension(0, 380));
         add(instructorCard, "growx");
     }
-    
+
     private void addFormField(JPanel parent, String label, JComponent field) {
         JLabel labelComp = new JLabel(label);
         labelComp.setFont(UIStyle.FONT_BODY_BOLD);
         labelComp.setForeground(UIStyle.TEXT_PRIMARY);
-        parent.add(labelComp, "growx");
-        parent.add(field, "growx, h 45!, wrap");
+        parent.add(labelComp, "growx, width 160:160:");
+        parent.add(field, "growx, h 48!, wrap");
     }
 
     private void createStudent() {
         try {
             String username = studentUsernameField.getText().trim();
             String password = new String(studentPasswordField.getPassword());
-            int rollNo = Integer.parseInt(studentRollField.getText().trim());
+            String rollStr = studentRollField.getText().trim();
             String program = studentProgramField.getText().trim();
-            int year = Integer.parseInt(studentYearField.getText().trim());
+            String yearStr = studentYearField.getText().trim();
+
+            if (username.isEmpty() || password.isEmpty() || rollStr.isEmpty() || program.isEmpty()
+                    || yearStr.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "All fields are required.", "Validation Error",
+                        JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            if (username.length() < 3) {
+                JOptionPane.showMessageDialog(this, "Username must be at least 3 characters long.", "Validation Error",
+                        JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            if (password.length() < 6) {
+                JOptionPane.showMessageDialog(this, "Password must be at least 6 characters long.", "Validation Error",
+                        JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            int rollNo;
+            try {
+                rollNo = Integer.parseInt(rollStr);
+                if (rollNo <= 0)
+                    throw new NumberFormatException();
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(this, "Roll number must be a positive integer.", "Validation Error",
+                        JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            int year;
+            try {
+                year = Integer.parseInt(yearStr);
+                if (year < 1 || year > 6) {
+                    JOptionPane.showMessageDialog(this, "Year must be between 1 and 6.", "Validation Error",
+                            JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(this, "Year must be a valid number.", "Validation Error",
+                        JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
             adminService.createStudentAccount(username, password, rollNo, program, year);
             JOptionPane.showMessageDialog(this, "Student account created successfully.",
                     "Success", JOptionPane.INFORMATION_MESSAGE);
@@ -89,9 +161,6 @@ class UserManagementPanel extends JPanel {
             studentRollField.setText("");
             studentProgramField.setText("");
             studentYearField.setText("");
-        } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(this, "Roll number and year must be numeric.",
-                    "Invalid Input", JOptionPane.WARNING_MESSAGE);
         } catch (ServiceException ex) {
             JOptionPane.showMessageDialog(this, ex.getMessage(), "Validation Error", JOptionPane.ERROR_MESSAGE);
         } catch (SQLException ex) {
@@ -105,6 +174,25 @@ class UserManagementPanel extends JPanel {
             String username = instructorUsernameField.getText().trim();
             String password = new String(instructorPasswordField.getPassword());
             String department = instructorDepartmentField.getText().trim();
+
+            if (username.isEmpty() || password.isEmpty() || department.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "All fields are required.", "Validation Error",
+                        JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            if (username.length() < 3) {
+                JOptionPane.showMessageDialog(this, "Username must be at least 3 characters long.", "Validation Error",
+                        JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            if (password.length() < 6) {
+                JOptionPane.showMessageDialog(this, "Password must be at least 6 characters long.", "Validation Error",
+                        JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
             adminService.createInstructorAccount(username, password, department);
             JOptionPane.showMessageDialog(this, "Instructor account created successfully.",
                     "Success", JOptionPane.INFORMATION_MESSAGE);
@@ -119,4 +207,3 @@ class UserManagementPanel extends JPanel {
         }
     }
 }
-
